@@ -1,0 +1,21 @@
+{
+  "name": "pdf-playwright-diff",
+  "version": "1.1.0",
+  "private": true,
+  "description": "PDF visual & content diff with Playwright + pdfjs-dist (no native binaries)",
+  "scripts": {
+    "preinstall": "npx playwright install chromium",
+    "test": "npx playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^18.18.6",
+    "@types/pixelmatch": "^5.2.4",
+    "@types/pngjs": "^6.0.5",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^3.11.174",
+    "pixelmatch": "^5.3.0",
+    "pngjs": "^7.0.0",
+    "typescript": "^5.4.5"
+  }
+}
