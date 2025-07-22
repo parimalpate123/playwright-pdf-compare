@@ -4,31 +4,15 @@ on:
     types: [created]
 
 jobs:
-  pr-agent:
+  review:
+    if: contains(github.event.comment.body, '@agent')
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      issues: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-
-      - name: Install dependencies
-        working-directory: ./.github/actions/pr-agent-action-main
-        run: bun install
-
-      - name: Build TypeScript
-        working-directory: ./.github/actions/pr-agent-action-main
-        run: |
-          bun build src/entrypoints/prepare.ts --outdir dist
-
-      - name: Run PR Agent
-        working-directory: ./.github/actions/pr-agent-action-main
-        run: bun run dist/entrypoints/prepare.js
+      - uses: actions/checkout@v4
+      # - uses: leegmoore/pr-agent-action@v1.0.1
+      - uses: ./.github/actions/pr-agent-action
+        with:
+          model: "claude-sonnet-4-20250514"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TRIGGER_PHRASE: "@agent"
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
