@@ -1,0 +1,61 @@
+name: "PR Agent"
+description: "Multi-provider AI PR assistant (Anthropic & OpenAI)"
+branding:
+  icon: "git-pull-request"
+  color: "purple"
+
+inputs:
+  anthropic_api_key:
+    description: "Anthropic API key (for Sonnet/Sandbox)"
+    required: false
+  openai_api_key:
+    description: "OpenAI API key (for o3-pro or other GPT models)"
+    required: false
+  model:
+    description: "Model id to use (e.g. claude-3-sonnet-20240229, gpt-4o-pro)"
+    required: false
+    default: "claude-3-sonnet-20240229"
+  trigger_phrase:
+    description: "Trigger phrase that activates the agent in comments"
+    required: false
+    default: "@agent"
+  max_tokens:
+    description: "Soft prompt token limit before diff summariser kicks in"
+    required: false
+    default: "25000"
+  timeout_minutes:
+    description: "Fail the run after N minutes"
+    required: false
+    default: "30"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: "1.2.12"
+
+    - name: Install deps
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}
+        bun install --production
+
+    - id: prepare
+      run: bun run dist/entrypoints/prepare.js
+      shell: bash
+      env:
+        TRIGGER_PHRASE: ${{ inputs.trigger_phrase }}
+    - id: agent
+      if: steps.prepare.outputs.run_agent == 'true'
+      run: bun run dist/entrypoints/run-agent.js --context_file ${{ steps.prepare.outputs.context_file }} --model ${{ inputs.model }} --max_tokens ${{ inputs.max_tokens }}
+      shell: bash
+    - if: steps.prepare.outputs.run_agent == 'true'
+      run: bun run dist/entrypoints/update-comment.js --context_file ${{ steps.prepare.outputs.context_file }} --body_file ${{ steps.agent.outputs.body_file }}
+      shell: bash 
