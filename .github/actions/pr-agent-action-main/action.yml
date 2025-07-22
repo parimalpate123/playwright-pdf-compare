@@ -1,3 +1,20 @@
+name: PR Agent
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  pr-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      # Now you can run your PR agent action
+      - name: Run PR Agent
+        uses: ./.github/actions/pr-agent-action
+        # Add any necessary inputs/env variables here
+
 name: "PR Agent"
 description: "Multi-provider AI PR assistant (Anthropic & OpenAI)"
 branding:
@@ -58,4 +75,4 @@ runs:
       shell: bash
     - if: steps.prepare.outputs.run_agent == 'true'
       run: bun run dist/entrypoints/update-comment.js --context_file ${{ steps.prepare.outputs.context_file }} --body_file ${{ steps.agent.outputs.body_file }}
-      shell: bash 
+      shell: bash
