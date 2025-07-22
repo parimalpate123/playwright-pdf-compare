@@ -14,8 +14,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: PR Agent
-        # uses: leemoorerpagentaction/pr-agent-action@main
-        uses: ./.github/actions/pr-agent-action-main
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        working-directory: ./.github/actions/pr-agent-action-main
+        run: bun install
+
+      - name: Build TypeScript
+        working-directory: ./.github/actions/pr-agent-action-main
+        run: |
+          bun build src/entrypoints/prepare.ts --outdir dist
+
+      - name: Run PR Agent
+        working-directory: ./.github/actions/pr-agent-action-main
+        run: bun run dist/entrypoints/prepare.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TRIGGER_PHRASE: "@agent"
