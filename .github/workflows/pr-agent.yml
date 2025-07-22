@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # - uses: leegmoore/pr-agent-action@v1.0.1
-      - uses: ./.github/actions/pr-agent-action
+      - uses: leegmoore/pr-agent-action@v1.0.1
+      # - uses: ./.github/actions/pr-agent-action
         with:
           model: "claude-sonnet-4-20250514"
         env:
