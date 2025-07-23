@@ -15,7 +15,14 @@ function detectProvider(model) {
 }
 async function run() {
     try {
-        const contextPath = core.getInput("context_file", { required: true });
+        // const contextPath = core.getInput("context_file", { required: true });
+        const contextPath = core.getInput("context_file") || process.argv.includes('--context_file') 
+          ? process.argv[process.argv.indexOf('--context_file') + 1]
+          : undefined;
+        
+        if (!contextPath) {
+          throw new Error("context_file must be provided either as input or CLI arg.");
+        }
         const context = JSON.parse(await readFile(contextPath, "utf8"));
         const model = core.getInput("model") || process.env.OPENAI_MODEL || process.env.ANTHROPIC_MODEL;
         if (!model)
