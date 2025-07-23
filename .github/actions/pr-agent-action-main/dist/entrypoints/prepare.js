@@ -98,11 +98,19 @@ async function run() {
     
     console.log("✅ PR number confirmed:", prNumber);
 
-    const commentId = await upsertTrackingComment(
-      octokit,
-      `PR Agent is working… \n\n(Trigger phrase \`${trigger}\` detected)`,
-    );
-    console.log("✅ Tracking comment created/updated, ID:", commentId);
+    // Skip tracking comment for now due to permissions issue
+    let commentId;
+    try {
+      commentId = await upsertTrackingComment(
+        octokit,
+        `PR Agent is working… \n\n(Trigger phrase \`${trigger}\` detected)`,
+      );
+      console.log("✅ Tracking comment created/updated, ID:", commentId);
+    } catch (error) {
+      console.log("⚠️ Could not create tracking comment (permissions issue), continuing...");
+      console.log("Error:", error.message);
+      commentId = null; // Set to null so we can continue
+    }
 
     let pr, files;
     try {
@@ -160,7 +168,7 @@ async function run() {
       throw new Error(`GitHub API failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
     
-    const agentIndex = comments.data.findIndex((c) => c.id === commentId);
+    const agentIndex = comments.data.findIndex((c) => commentId && c.id === commentId);
     console.log("Agent comment index:", agentIndex);
     
     if (agentIndex >= 0) {
