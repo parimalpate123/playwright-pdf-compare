@@ -15,6 +15,8 @@ jobs:
   review:
     if: contains(github.event.comment.body, '@agent')
     runs-on: ubuntu-latest
+    outputs:
+      context_file: ${{ steps.detect.outputs.context_file }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
