@@ -69,6 +69,10 @@ async function run() {
           timeoutMs,
         });
       } else {
+        console.log("ANTHROPIC_API_KEY set:", !!process.env.ANTHROPIC_API_KEY);
+        if (!process.env.ANTHROPIC_API_KEY) {
+          throw new Error("❌ ANTHROPIC_API_KEY is not set");
+        }
         answer = await anthropicChat(messages, {
           apiKey: process.env.ANTHROPIC_API_KEY,
           model,
