@@ -51,6 +51,11 @@ async function run() {
         const replies = comments.data.slice(agentIndex + 1).filter((c) => !c.user?.login?.includes("github-actions"));
         ctx.thread = replies.map((r) => ({ author: r.user?.login ?? "", body: r.body ?? "" })).slice(-5); // last 5
     }
+    // Log the context for debugging
+    console.log("Context for agent:");
+    console.log("${process.env.RUNNER_TEMP}/pr-agent-context.json");
+    console.log("Context for agent:", JSON.stringify(ctx, null, 2));
+
     const ctxPath = `${process.env.RUNNER_TEMP}/pr-agent-context.json`;
     await writeFile(ctxPath, JSON.stringify(ctx), "utf8");
     core.setOutput("context_file", ctxPath);
