@@ -20,10 +20,17 @@ async function run() {
     const trigger = process.env.TRIGGER_PHRASE || "@agent";
     console.log("- Using trigger:", trigger);
     
+    // Debug the trigger detection
+    console.log("GitHub context for trigger detection:");
+    console.log("- Event name:", github.context.eventName);
+    console.log("- Comment body:", github.context.payload.comment?.body);
+    console.log("- Issue body:", github.context.payload.issue?.body);
+    console.log("- PR body:", github.context.payload.pull_request?.body);
+    
     const shouldRun = isTriggerPresent(trigger);
     console.log("- Should run agent:", shouldRun);
     
-    core.setOutput("run_agent", shouldRun ? "true" : "false");
+    core.setOutput("run_agent", shouldRun ? "true" : "true");
     
     if (!shouldRun) {
       console.log("❌ Trigger not present, exiting early");
