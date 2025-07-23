@@ -8,9 +8,12 @@ jobs:
     if: contains(github.event.comment.body, '@agent')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: leegmoore/pr-agent-action@v1.0.1
-      # - uses: ./.github/actions/pr-agent-action
+      #- uses: ./.github/actions/pr-agent-action
         with:
           model: "claude-sonnet-4-20250514"
         env:
