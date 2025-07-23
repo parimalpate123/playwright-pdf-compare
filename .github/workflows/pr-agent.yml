@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: leegmoore/pr-agent-action@v1.0.2
+      - uses: leegmoore/pr-agent-action@v1.0.3
       #- uses: ./.github/actions/pr-agent-action-main
         with:
           model: "claude-sonnet-4-20250514"
