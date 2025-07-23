@@ -2,7 +2,8 @@ import { readFileSync } from "fs";
 import { join } from "path";
 export function buildPrompt(ctx) {
     // Read the template file from src directory
-    const templatePath = join(process.cwd(), "src", "prompt", "review-template.md");
+    // const templatePath = join(process.cwd(), "src", "prompt", "review-template.md");
+    const templatePath = join(__dirname, "../prompt/review-template.md");
     const template = readFileSync(templatePath, "utf8");
     // Format thread context
     let threadContent = "";
