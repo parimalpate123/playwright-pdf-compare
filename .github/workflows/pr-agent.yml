@@ -13,7 +13,7 @@ jobs:
         with:
           fetch-depth: 0
       #- uses: leegmoore/pr-agent-action@v1.0.1
-      - uses: ./.github/actions/pr-agent-action
+      - uses: ./.github/actions/pr-agent-action-main
         with:
           model: "claude-sonnet-4-20250514"
         env:
