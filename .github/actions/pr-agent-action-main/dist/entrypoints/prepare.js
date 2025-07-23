@@ -27,10 +27,20 @@ async function run() {
     console.log("- Issue body:", github.context.payload.issue?.body);
     console.log("- PR body:", github.context.payload.pull_request?.body);
     
-    const shouldRun = isTriggerPresent(trigger);
-    console.log("- Should run agent:", shouldRun);
+    // Let's also check what isTriggerPresent is actually checking
+    console.log("- Full comment object:", JSON.stringify(github.context.payload.comment, null, 2));
     
-    core.setOutput("run_agent", shouldRun ? "true" : "true");
+    // Manual trigger check for debugging
+    const commentBody = github.context.payload.comment?.body || "";
+    const manualCheck = commentBody.includes(trigger);
+    console.log("- Manual trigger check:", manualCheck);
+    console.log("- Comment includes '@agent':", commentBody.includes("@agent"));
+    
+    // Use manual check instead of the faulty isTriggerPresent function
+    const shouldRun = manualCheck; // isTriggerPresent(trigger);
+    console.log("- Using manual check, should run agent:", shouldRun);
+    
+    core.setOutput("run_agent", shouldRun ? "true" : "false");
     
     if (!shouldRun) {
       console.log("❌ Trigger not present, exiting early");
