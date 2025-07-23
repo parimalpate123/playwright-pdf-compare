@@ -47,17 +47,15 @@ runs:
         cd ${{ github.action_path }}
         bun install --production
 
-    - name: Debug Environment
+    - name: Prepare PR context
+      id: prepare
       run: |
         echo "RUNNER_TEMP: $RUNNER_TEMP"
         echo "GITHUB_TOKEN exists: ${{ env.GITHUB_TOKEN != '' }}"
         ls -la $RUNNER_TEMP || echo "RUNNER_TEMP directory doesn't exist"
         echo "Event: ${{ github.event_name }}"
         echo "PR Number: ${{ github.event.pull_request.number }}"
-
-    - name: Prepare PR context
-      id: prepare
-      run: bun run ${{ github.action_path }}/dist/entrypoints/prepare.js
+        bun run ${{ github.action_path }}/dist/entrypoints/prepare.js
       shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}  # This passes the auto-generated token
