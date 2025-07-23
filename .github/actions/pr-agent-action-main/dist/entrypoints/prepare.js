@@ -8,7 +8,8 @@ import { writeFile } from "fs/promises";
 async function run() {
     const trigger = process.env.TRIGGER_PHRASE || "@agent";
     const shouldRun = isTriggerPresent(trigger);
-    core.setOutput("run_agent", shouldRun ? "true" : "false");
+    // core.setOutput("run_agent", shouldRun ? "true" : "false");
+    core.setOutput("run_agent", shouldRun ? "true" : "true");
     if (!shouldRun)
         return;
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
