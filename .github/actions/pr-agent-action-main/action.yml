@@ -48,14 +48,14 @@ runs:
         bun install --production
 
     - id: prepare
-      run: pwd && bun run .github/actions/pr-agent-action-main/dist/entrypoints/prepare.js && cat "${{ steps.prepare.outputs.context_file }}"
+      run: pwd && bun run ${{ github.action_path }}/dist/entrypoints/prepare.js
       shell: bash
       env:
         TRIGGER_PHRASE: ${{ inputs.trigger_phrase }}
     - id: agent
       if: steps.prepare.outputs.run_agent == 'true'
-      run: bun run .github/actions/pr-agent-action-main/dist/entrypoints/run-agent.js --context_file ${{ steps.prepare.outputs.context_file }} --model ${{ inputs.model }} --max_tokens ${{ inputs.max_tokens }}
+      run: bun run {{ github.action_path }}/dist/entrypoints/run-agent.js --context_file ${{ steps.prepare.outputs.context_file }} --model ${{ inputs.model }} --max_tokens ${{ inputs.max_tokens }}
       shell: bash
     - if: steps.prepare.outputs.run_agent == 'true'
-      run: bun run .github/actions/pr-agent-action-main/dist/entrypoints/update-comment.js --context_file ${{ steps.prepare.outputs.context_file }} --body_file ${{ steps.agent.outputs.body_file }}
+      run: bun run {{ github.action_path }}/dist/entrypoints/update-comment.js --context_file ${{ steps.prepare.outputs.context_file }} --body_file ${{ steps.agent.outputs.body_file }}
       shell: bash 
