@@ -47,11 +47,18 @@ runs:
         cd ${{ github.action_path }}
         bun install --production
 
-    - id: prepare
-      run: pwd && bun run ${{ github.action_path }}/dist/entrypoints/prepare.js
+    - name: Prepare PR context
+      id: prepare
+      run: bun run ${{ github.action_path }}/dist/entrypoints/prepare.js
       shell: bash
       env:
+        GITHUB_TOKEN: ${{ github.token }}  # This passes the auto-generated token
         TRIGGER_PHRASE: ${{ inputs.trigger_phrase }}
+    # - id: prepare
+    #   run: pwd && bun run ${{ github.action_path }}/dist/entrypoints/prepare.js
+    #   shell: bash
+    #   env:
+    #     TRIGGER_PHRASE: ${{ inputs.trigger_phrase }}
     - id: agent
       if: steps.prepare.outputs.run_agent == 'true'
       run: bun run ${{ github.action_path }}/dist/entrypoints/run-agent.js --context_file ${{ steps.prepare.outputs.context_file }} --model ${{ inputs.model }} --max_tokens ${{ inputs.max_tokens }}
