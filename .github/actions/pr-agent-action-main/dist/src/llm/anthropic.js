@@ -1,5 +1,11 @@
-import fetch from "node-fetch";
-export async function anthropicChat(messages, opts) {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.anthropicChat = anthropicChat;
+const node_fetch_1 = __importDefault(require("node-fetch"));
+async function anthropicChat(messages, opts) {
     const body = {
         model: opts.model,
         max_tokens: opts.maxTokens,
@@ -9,7 +15,7 @@ export async function anthropicChat(messages, opts) {
     const ctl = new AbortController();
     const timeout = setTimeout(() => ctl.abort("timeout"), opts.timeoutMs ?? 60000);
     try {
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
+        const res = await (0, node_fetch_1.default)("https://api.anthropic.com/v1/messages", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

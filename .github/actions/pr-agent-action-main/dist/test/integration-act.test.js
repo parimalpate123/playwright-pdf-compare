@@ -1,14 +1,16 @@
-import { expect, test } from "bun:test";
-import { spawnSync } from "node:child_process";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const bun_test_1 = require("bun:test");
+const node_child_process_1 = require("node:child_process");
 // Skips if act not installed
 function hasAct() {
-    return spawnSync("act", ["--version"], { stdio: "ignore" }).status === 0;
+    return (0, node_child_process_1.spawnSync)("act", ["--version"], { stdio: "ignore" }).status === 0;
 }
-test("composite action runs under act", () => {
+(0, bun_test_1.test)("composite action runs under act", () => {
     if (!hasAct()) {
         console.log("[skip] act CLI not installed – skipping integration test");
         return;
     }
-    const res = spawnSync("bash", ["scripts/act-test.sh"], { stdio: "inherit" });
-    expect(res.status).toBe(0);
+    const res = (0, node_child_process_1.spawnSync)("bash", ["scripts/act-test.sh"], { stdio: "inherit" });
+    (0, bun_test_1.expect)(res.status).toBe(0);
 });

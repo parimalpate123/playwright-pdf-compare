@@ -1,11 +1,14 @@
-import { readFileSync } from "fs";
-import { join } from "path";
-export function buildPrompt(ctx) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.buildPrompt = buildPrompt;
+const fs_1 = require("fs");
+const path_1 = require("path");
+function buildPrompt(ctx) {
     // Read the template file using GitHub Action path (ES modules compatible)
-    const templatePath = join(process.env.GITHUB_ACTION_PATH || ".", "src", "prompt", "review-template.md");
+    const templatePath = (0, path_1.join)(process.env.GITHUB_ACTION_PATH || ".", "src", "prompt", "review-template.md");
     let template;
     try {
-        template = readFileSync(templatePath, "utf8");
+        template = (0, fs_1.readFileSync)(templatePath, "utf8");
     }
     catch (error) {
         throw new Error(`Failed to load prompt template: ${error instanceof Error ? error.message : 'Unknown error'}`);

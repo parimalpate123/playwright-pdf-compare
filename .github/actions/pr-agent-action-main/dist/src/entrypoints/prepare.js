@@ -1,18 +1,53 @@
 #!/usr/bin/env bun
-import { Octokit } from "@octokit/rest";
-import * as core from "@actions/core";
-import * as github from "@actions/github";
-import { isTriggerPresent } from "../github/trigger";
-import { upsertTrackingComment } from "../github/comments";
-import { writeFile } from "fs/promises";
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+const rest_1 = require("@octokit/rest");
+const core = __importStar(require("@actions/core"));
+const github = __importStar(require("@actions/github"));
+const trigger_1 = require("../github/trigger");
+const comments_1 = require("../github/comments");
+const promises_1 = require("fs/promises");
 async function run() {
     const trigger = process.env.TRIGGER_PHRASE || "@agent";
-    const shouldRun = isTriggerPresent(trigger);
+    const shouldRun = (0, trigger_1.isTriggerPresent)(trigger);
     core.setOutput("run_agent", shouldRun ? "true" : "false");
     if (!shouldRun)
         return;
-    const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-    const commentId = await upsertTrackingComment(octokit, `PR Agent is working… \n\n(Trigger phrase \`${trigger}\` detected)`);
+    const octokit = new rest_1.Octokit({ auth: process.env.GITHUB_TOKEN });
+    const commentId = await (0, comments_1.upsertTrackingComment)(octokit, `PR Agent is working… \n\n(Trigger phrase \`${trigger}\` detected)`);
     // gather PR metadata
     const prNumber = github.context.payload.pull_request?.number ?? github.context.payload.issue?.number;
     if (!prNumber) {
@@ -66,7 +101,7 @@ async function run() {
         ctx.thread = replies.map((r) => ({ author: r.user?.login ?? "", body: r.body ?? "" })).slice(-5); // last 5
     }
     const ctxPath = `${process.env.RUNNER_TEMP}/pr-agent-context.json`;
-    await writeFile(ctxPath, JSON.stringify(ctx), "utf8");
+    await (0, promises_1.writeFile)(ctxPath, JSON.stringify(ctx), "utf8");
     core.setOutput("context_file", ctxPath);
 }
 run();

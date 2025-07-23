@@ -1,4 +1,7 @@
-export async function postInlineReview(octokit, owner, repo, pull_number, comments, summary) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.postInlineReview = postInlineReview;
+async function postInlineReview(octokit, owner, repo, pull_number, comments, summary) {
     if (comments.length === 0)
         return;
     await octokit.rest.pulls.createReview({
