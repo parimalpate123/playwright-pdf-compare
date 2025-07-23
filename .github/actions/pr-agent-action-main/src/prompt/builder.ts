@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import { join } from "path";
+import { join, resolve } from "path";
 
 export interface PromptContext {
   title: string;
@@ -12,13 +12,18 @@ export interface PromptContext {
 }
 
 export function buildPrompt(ctx: PromptContext): string {
-  // Read the template file using GitHub Action path (ES modules compatible)
-  const templatePath = join(process.env.GITHUB_ACTION_PATH || ".", "src", "prompt", "review-template.md");
+  // Resolve relative to dist/entrypoints
+  const templatePath = resolve(__dirname, "../../prompt/review-template.md");
+
   let template: string;
   try {
     template = readFileSync(templatePath, "utf8");
   } catch (error) {
-    throw new Error(`Failed to load prompt template: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to load prompt template: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
   }
 
   // Format thread context
@@ -44,4 +49,4 @@ export function buildPrompt(ctx: PromptContext): string {
     .replace("{{BODY}}", ctx.body)
     .replace("{{DIFF}}", diff)
     .replace("{{THREAD}}", threadContent);
-} 
+}
