@@ -52,26 +52,36 @@ runs:
       run: |
         echo "RUNNER_TEMP: $RUNNER_TEMP"
         echo "GITHUB_TOKEN exists: ${{ env.GITHUB_TOKEN != '' }}"
-        ls -la $RUNNER_TEMP || echo "RUNNER_TEMP directory doesn't exist"
         echo "Event: ${{ github.event_name }}"
         echo "PR Number: ${{ github.event.pull_request.number }}"
         bun run ${{ github.action_path }}/dist/entrypoints/prepare.js
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ github.token }}  # This passes the auto-generated token
+        GITHUB_TOKEN: ${{ github.token }}
         TRIGGER_PHRASE: ${{ inputs.trigger_phrase }}
-    # - id: prepare
-    #   run: pwd && bun run ${{ github.action_path }}/dist/entrypoints/prepare.js
-    #   shell: bash
-    #   env:
-    #     TRIGGER_PHRASE: ${{ inputs.trigger_phrase }}
-    - id: agent
+
+    - name: Run PR Agent
+      id: agent
       if: steps.prepare.outputs.run_agent == 'true'
-      # run: bun run ${{ github.action_path }}/dist/entrypoints/run-agent.js --context_file ${{ steps.prepare.outputs.context_file }} --model ${{ inputs.model }} --max_tokens ${{ inputs.max_tokens }}
-      # run: bun run ${{ github.action_path }}/dist/entrypoints/run-agent.js --context_file /home/runner/work/_temp/pr-agent-context.json --model ${{ inputs.model }} --max_tokens ${{ inputs.max_tokens }}
-      run: bun run ${{ github.action_path }}/dist/entrypoints/run-agent.js --context_file /home/runner/work/_temp/pr-agent-context.json --model claude-3-sonnet-20240229 --max_tokens 25000
+      run: |
+        echo "Running agent with model: ${{ inputs.model }}"
+        bun run ${{ github.action_path }}/dist/entrypoints/run-agent.js \
+          --context_file ${{ steps.prepare.outputs.context_file }} \
+          --model ${{ inputs.model }} \
+          --max_tokens ${{ inputs.max_tokens }}
       shell: bash
-    - if: steps.prepare.outputs.run_agent == 'true'
-      # run: bun run ${{ github.action_path }}/dist/entrypoints/update-comment.js --context_file ${{ steps.prepare.outputs.context_file }} --body_file ${{ steps.agent.outputs.body_file }}
-      run: bun run ${{ github.action_path }}/dist/entrypoints/update-comment.js --context_file /home/runner/work/_temp/pr-agent-context.json --body_file ${{ steps.agent.outputs.body_file }}
-      shell: bash 
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        OPENAI_API_KEY: ${{ inputs.openai_api_key }}
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic_api_key }}
+
+    - name: Update PR comment
+      if: steps.prepare.outputs.run_agent == 'true'
+      run: |
+        echo "Updating PR comment with generated body..."
+        bun run ${{ github.action_path }}/dist/entrypoints/update-comment.js \
+          --context_file ${{ steps.prepare.outputs.context_file }} \
+          --body_file ${{ steps.agent.outputs.body_file }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
