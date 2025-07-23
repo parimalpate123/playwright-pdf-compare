@@ -48,7 +48,7 @@ runs:
         bun install --production
 
     - id: prepare
-      run: pwd && bun run .github/actions/pr-agent-action-main/dist/entrypoints/prepare.js
+      run: pwd && bun run .github/actions/pr-agent-action-main/dist/entrypoints/prepare.js && cat "${{ steps.prepare.outputs.context_file }}"
       shell: bash
       env:
         TRIGGER_PHRASE: ${{ inputs.trigger_phrase }}
