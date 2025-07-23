@@ -21,9 +21,13 @@ jobs:
         with:
           fetch-depth: 0
       #- uses: leegmoore/pr-agent-action@v1.0.3
-      - uses: ./.github/actions/pr-agent-action-main
+      - name: Run PR Agent
+        uses: ./.github/actions/pr-agent-action-main
         with:
-          model: "claude-sonnet-4-20250514"
+          context_file: ${{ steps.prepare.outputs.context_file }}
+          model: claude-sonnet-4-20250514
+          max_tokens: 25000
+          timeout_ms: 60000
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
