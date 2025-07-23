@@ -47,6 +47,12 @@ runs:
         cd ${{ github.action_path }}
         bun install --production
 
+    - name: Build TypeScript
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}
+        bun build src/entrypoints/prepare.ts --outdir dist
+
     - id: prepare
       run: bun run dist/entrypoints/prepare.js
       shell: bash
@@ -58,4 +64,4 @@ runs:
       shell: bash
     - if: steps.prepare.outputs.run_agent == 'true'
       run: bun run dist/entrypoints/update-comment.js --context_file ${{ steps.prepare.outputs.context_file }} --body_file ${{ steps.agent.outputs.body_file }}
-      shell: bash 
+      shell: bash
