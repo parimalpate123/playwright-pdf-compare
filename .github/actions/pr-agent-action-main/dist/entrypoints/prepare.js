@@ -151,6 +151,7 @@ async function run() {
       body: pr.data.body ?? "",
       diff,
       thread: [],
+      userComment: commentBody || "",
     };
 
     // Collect recent user replies to agent comment for follow-up context

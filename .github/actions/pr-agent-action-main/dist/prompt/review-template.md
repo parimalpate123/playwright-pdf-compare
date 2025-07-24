@@ -20,6 +20,10 @@ Title       : {{TITLE}}
 {{BODY}}
 </pr_body>
 
+<user_comment>
+{{COMMENT}}
+</user_comment>
+
 <diff>
 {{DIFF}}
 </diff>
