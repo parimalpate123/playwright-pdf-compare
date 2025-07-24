@@ -24,7 +24,8 @@ jobs:
           fetch-depth: 0
       #- uses: leegmoore/pr-agent-action@v1.0.3
       - name: Run PR Agent
-        uses: ./.github/actions/pr-agent-action-main
+        #uses: ./.github/actions/pr-agent-action-main
+        uses: parimalpate123/pr-code-review@main
         with:
           context_file: ${{ steps.prepare.outputs.context_file }}
           model: claude-sonnet-4-20250514
