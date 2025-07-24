@@ -55,34 +55,33 @@ async function run() {
       repo: context.repo,
       prNumber: context.prNumber,
     });
-
+    console.log("🔍 Prompt being sent to Claude:\n", prompt); 
     const messages = [{ role: "user", content: prompt }];
     let answer = "";
 
-    try {
-      if (process.env.LLM_FAKE_RESPONSE) {
-        answer = process.env.LLM_FAKE_RESPONSE;
-      } else if (provider === "openai") {
-        answer = await chatCompletion(messages, {
-          apiKey: process.env.OPENAI_API_KEY,
-          model,
-          timeoutMs,
-        });
-      } else {
-        console.log("ANTHROPIC_API_KEY set:", !!process.env.ANTHROPIC_API_KEY);
-        if (!process.env.ANTHROPIC_API_KEY) {
-          throw new Error("❌ ANTHROPIC_API_KEY is not set");
+        try {
+            if (provider === "openai") {
+                console.log("🔍 Prompt being sent to Claude/OpenAI:\n", prompt);
+                answer = await chatCompletion(messages, {
+                    apiKey: process.env.OPENAI_API_KEY,
+                    model,
+                    timeoutMs: parseInt(core.getInput("timeout_ms") || process.env.TIMEOUT_MS || "60000", 10),
+                });
+            } else {
+                console.log("🔍 Prompt being sent to Claude/Anthropic:\n", prompt);
+                if (!process.env.ANTHROPIC_API_KEY) {
+                    throw new Error("❌ ANTHROPIC_API_KEY is not set");
+                }
+                answer = await anthropicChat(messages, {
+                    apiKey: process.env.ANTHROPIC_API_KEY,
+                    model,
+                    maxTokens: 1024,
+                    timeoutMs: parseInt(core.getInput("timeout_ms") || process.env.TIMEOUT_MS || "60000", 10),
+                });
+            }
+        } catch (err) {
+            answer = `⚠️ LLM call failed: ${err.message}`;
         }
-        answer = await anthropicChat(messages, {
-          apiKey: process.env.ANTHROPIC_API_KEY,
-          model,
-          maxTokens: 1024,
-          timeoutMs,
-        });
-      }
-    } catch (err) {
-      answer = `⚠️ LLM call failed: ${err.message}`;
-    }
 
     let inline = [];
     const jsonMatch = answer.match(/```json([\s\S]*?)```/);
