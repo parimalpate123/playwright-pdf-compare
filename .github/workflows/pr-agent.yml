@@ -25,7 +25,7 @@ jobs:
       #- uses: leegmoore/pr-agent-action@v1.0.3
       - name: Run PR Agent
         #uses: ./.github/actions/pr-agent-action-main
-        uses: parimalpatel123/pr-code-review@main
+        uses: parimalpate123/pr-code-review-action@main
         with:
           context_file: ${{ steps.prepare.outputs.context_file }}
           model: claude-sonnet-4-20250514
