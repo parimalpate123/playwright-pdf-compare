@@ -36,6 +36,9 @@ jobs:
           timeout_ms: 60000
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
