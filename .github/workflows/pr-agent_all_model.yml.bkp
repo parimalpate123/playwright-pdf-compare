@@ -5,6 +5,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+# Add these permissions
 permissions:
   contents: read
   issues: write
@@ -14,24 +15,33 @@ jobs:
   review:
     if: contains(github.event.comment.body, '@agent')
     runs-on: ubuntu-latest
+    outputs:
+      context_file: ${{ steps.detect.outputs.context_file }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
+      #- uses: leegmoore/pr-agent-action@v1.0.3
       - name: Run PR Agent
-        #uses: parimalpate123/pr-code-review-action@main
-        uses: parimalpate123/pr-code-review-action@justbedrock
+        #uses: ./.github/actions/pr-agent-action-main
+        uses: parimalpate123/pr-code-review-action@main
         with:
-          model: anthropic.claude-3-5-sonnet-20240620-v1:0 # <--- Update as needed!
+          context_file: ${{ steps.prepare.outputs.context_file }}
+          # model: claude-sonnet-4-20250514 # Antropic model
+          model: anthropic.claude-3-5-sonnet-20240620-v1:0 # Bedrock model
+          bedrock_model: anthropic.claude-3-5-sonnet-20240620-v1:0
           bedrock_region: us-east-1
           max_tokens: 25000
           timeout_ms: 60000
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
         env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
